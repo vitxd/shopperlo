@@ -1,6 +1,4 @@
-Requirements:
+npm install
 
-npm install socket.io
-npm install connect
-npm install express
-npm install mongoose
+nodemon app.js 3000
+
