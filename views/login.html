@@ -1,0 +1,16 @@
+<!-- this is the header div at the top -->
+<div id="content">
+	<!-- here is where you can add your panels -->
+	<div title='Login' id="main" class="panel" selected="true" scrolling="no">
+		<form action="/" method="post">
+			<fieldset style="text-align: center;">
+				<% if(error) { %><p style="color: red;">Invalid username.</p><% } %>
+				<input class="jq-ui-forms" placeholder="Username" name="username" id="username" type="text" />
+
+				<input class="jq-ui-forms" placeholder="Password" name="password" id="pwd" type="password" />
+
+				<input class="jq-ui-forms" type="submit" />
+			</fieldset>
+		</form>
+	</div>
+</div>
