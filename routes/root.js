@@ -1,5 +1,6 @@
 
-var User = require('./user.js').User;
+var User = require('./../models/user.js').User,
+	data = false;
 
 /*
  * GET home page.
@@ -48,19 +49,32 @@ Router.prototype.init = function(){
 
 Router.prototype.setUser = function(){
 	this.user = new User({_id : this.getUserId()});
-}
+};
 
 Router.prototype.index = function(){
-	this.getUser(function(err, user){
-		console.log(user);
+	user = this.getUser(function(err, user){
 		user.getGroups(function(results){
 			this.res.render('index.html', { title: 'Index', groups : results, libraries : [] });
 		}.bind(this));
 	}.bind(this));
+
+	console.log(user.username);
+
 };
 
-Router.prototype.getUser = function(callback){
-	User.findById(this.getUserId(), callback);
+Router.prototype.getUser = function(callback, chk){
+
+	if(chk === undefined){
+		User.findById(this.getUserId(), function(err, result){
+			data = result;
+		});
+	}
+
+	if(!data){
+		return this.getUser(null, true);
+	}
+
+	return data;
 };
 
 Router.prototype.about = function(){
@@ -71,12 +85,13 @@ Router.prototype.login = function(err){
 	this.res.render('login.html', { error: err, libraries : [ 'login.js' ] } );
 };
 
+
 Router.prototype.getUserId = function(){
 	return this.session.userId;
-}
+};
 
 Router.prototype.doLogin = function(){
-	console.log('Login!')
+	console.log('Login!');
 	console.log(this.post);
 
 	User.find({username: this.post.username}, function(err, result){

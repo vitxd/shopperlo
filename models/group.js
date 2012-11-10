@@ -1,5 +1,7 @@
-var   db = require('./db.js').db
-	, Schema = require('./db.js').Schema
+var   db 			= require('./db.js').db
+	, Schema		= require('./db.js').Schema
+	, UserSchema 	= require('./user.js').schema
+	, ItemSchema	= require('./item.js').schema
 	;
 
 Group = new Schema({
@@ -9,16 +11,9 @@ Group = new Schema({
 			unique: true
 		}
 	},
-	users 	: [String],
-	list 	: [{
-		name 	: String,
-		qty 	: Number,
-		bought 	: Boolean,
-		updated : {
-			type	: Date,
-			default : Date.now
-		}
-	}]
+	users 	: [UserSchema],
+	list 	: [ItemSchema]
 });
 
-module.exports.Group = db.model('group', Group);
+module.exports.schema = Group;
+module.exports.Group  = db.model('Group', Group);
