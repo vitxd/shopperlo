@@ -4,7 +4,9 @@
 	<div title='Login' id="main" class="panel" selected="true" scrolling="no">
 		<form action="/" method="post">
 			<fieldset style="text-align: center;">
-				<% if(error) { %><p style="color: red;">Invalid username.</p><% } %>
+				{{#if error}}
+				<p style="color: red;">Invalid username.</p>
+				{{/if}}
 				<input class="jq-ui-forms" placeholder="Username" name="username" id="username" type="text" />
 
 				<input class="jq-ui-forms" placeholder="Password" name="password" id="pwd" type="password" />

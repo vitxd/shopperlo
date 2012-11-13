@@ -1,0 +1,3 @@
+$.ui.ready(function(){
+
+});

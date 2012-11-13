@@ -1,6 +1,8 @@
 
-var User = require('./../models/user.js').User,
-	data = false;
+var   GroupModel 	= require('./../models/group.js').Group
+	, UserModel 	= require('./../models/user.js').User
+	, View 			= require('./../utility/view.js')
+	;
 
 /*
  * GET home page.
@@ -15,14 +17,15 @@ var Router = function(req, res){
     this.req		= req;
     this.res		= res;
 
+	this.view 		= new View(res);
+
 	this.method 	= req.method;
 	this.session 	= req.session;
 
 	this.post		= req.body;
 
-	console.log(this.session.userId);
-
     this.init();
+	this.close();
 };
 
 Router.prototype.isPost = function(){
@@ -30,12 +33,11 @@ Router.prototype.isPost = function(){
 };
 
 Router.prototype.isLogged = function(){
-	return (this.session.userId != undefined);
+	return (typeof this.session.user === 'object');
 };
 
 Router.prototype.init = function(){
 	if(this.isLogged()){
-		this.setUser();
 		this.index();
 	}
 	else{
@@ -44,71 +46,73 @@ Router.prototype.init = function(){
 		else
 			this.login(false);
 	}
-
 };
 
-Router.prototype.setUser = function(){
-	this.user = new User({_id : this.getUserId()});
+Router.prototype.setUser = function(user){
+	this.session.user 	= user;
 };
 
 Router.prototype.index = function(){
-	user = this.getUser(function(err, user){
-		user.getGroups(function(results){
-			this.res.render('index.html', { title: 'Index', groups : results, libraries : [] });
-		}.bind(this));
-	}.bind(this));
+	if(!this.isLogged())
+		return this.login();
 
-	console.log(user.username);
-
+	this.view
+		.set('groups', this.session.groups)
+		.display('index.html');
 };
 
-Router.prototype.getUser = function(callback, chk){
-
-	if(chk === undefined){
-		User.findById(this.getUserId(), function(err, result){
-			data = result;
-		});
-	}
-
-	if(!data){
-		return this.getUser(null, true);
-	}
-
-	return data;
-};
-
-Router.prototype.about = function(){
-    this.res.render('index', { title: 'About' })
+Router.prototype.getUser = function(){
+	return this.session.user;
 };
 
 Router.prototype.login = function(err){
-	this.res.render('login.html', { error: err, libraries : [ 'login.js' ] } );
+	if(this.isLogged())
+		return this.index();
+
+	this.view
+		.addLibrary('login.js')
+		.set('error', err)
+		.display('login.html')
 };
 
-
-Router.prototype.getUserId = function(){
-	return this.session.userId;
+Router.prototype.setGroups = function(groups){
+	this.session.groups = groups;
+	return this;
 };
 
 Router.prototype.doLogin = function(){
-	console.log('Login!');
-	console.log(this.post);
 
-	User.find({username: this.post.username}, function(err, result){
+	UserModel
+		.findOne({username : this.post.username})
+		.populate('groups', 'name groups')
+		.exec(function(err, user){
+			try{
 
-		try{
-			if(result[0].authenticate(this.post.password)){
-				this.session.userId = result[0].id;
-				this.index();
+				if(err) throw new Error(err);
+				if(user === null) {
+					console.log('User is null: ');
+					console.log(user);
+					throw new Error('User does not exist');
+				}
+
+				if(user.authenticate(this.post.password)){
+					this.setUser(user);
+					this.setGroups(user.groups);
+					this.index();
+				}
+				else
+					throw new Error('Wrong password');
+
+			} catch (err) {
+				console.log('Exception caught: ' + err.message);
+				this.login(true);
 			}
-			else
-				throw 'error';
-		} catch (err) {
-			console.log(err);
-			this.login(true);
-		}
 	}.bind(this));
 
 
 
 };
+
+Router.prototype.close = function(){
+	this.session.save();
+}

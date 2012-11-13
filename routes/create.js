@@ -1,5 +1,5 @@
-var   GroupSchema 	= require('./../models/group.js').Group
-	, UserSchema	= require('./../models/user.js').User
+var   GroupModel 	= require('./../models/group.js').Group
+	, UserModel		= require('./../models/user.js').User
 	;
 
 exports.router = function(req, res, callback){
@@ -43,57 +43,66 @@ CreateRouter.prototype.error = function(){
 };
 
 CreateRouter.prototype.user = function(){
-	var   user
-		, group
-		;
+	var user;
 
-	try{
-		user = new UserSchema();
-		user.username = this.req.param('username');
-		user.password = this.req.param('password');
-		user.email 	  = this.req.param('email');
+	UserModel.find({username: this.req.param('username')}, function(err, result){
+		if(result === undefined || result.length === 0){
+			user = new UserModel();
+			user.username = this.req.param('username');
+			user.password = this.req.param('password');
+			user.email 	  = this.req.param('email');
+			console.log('new user');
+		} else {
+			user = result[0];
+			console.log('old user');
+		}
 
-		GroupSchema.findById(this.req.param('group'), function(err, result){
-			if(result == null){
+		console.log(user._id);
+
+		GroupModel.findById(this.req.param('group'), function(err, group){
+		try{
+			if(group === null){
+				console.log('Zio can');
 				throw new Error('Group does not exist');
 			}
-			for(i in result.users){
-				if(result.users[i].username == user.username){
-					throw new Error('User exists');
-				}
-			}
 
-			result.users.push(user);
-
-			console.log(result);
-			result.save(function(err){
+			user.groups.push(group._id);
+			group.users.push(user._id);
+			user.save();
+			group.save(function(err){
 				if(err) console.log('error saving group: ' + err);
 			});
 			this.res.send('Done.');
-		}.bind(this))
-	} catch (e){
-		this.res.send('Error. ' + e.message);
-	}
-};
 
+		} catch(e) {
+			this.res.send('Error. ' + e.message);
+		}
+		}.bind(this));
+	}.bind(this));
+};
 
 CreateRouter.prototype.group = function(){
 	var name = this.req.param('name');
+	console.log('Creating group name: ' + name);
 
-	console.log(name);
-	GroupSchema.find({name : name}, function(err, group){
-		if(group.length == 0){
-			console.log('New group! ' +name);
-			group = new GroupSchema({name : name});
-			group.users = [];
-			group.list 	= [];
-			group.save(function(err){
-				if(err) console.log(err);
-			});
+	GroupModel.find({name : name}, function(err, groups){
+		try{
+			if(groups.length == 0){
+				group = new GroupModel({name : name});
+				group.list 	= [];
+				group.users = [];
+				group.save(function(err){
+					if(err) console.log(err);
+				});
+			}
+			else{
+				group = groups[0];
+			}
+			this.res.send('Done. Id is: ' + group.id);
+
+		} catch(e){
+			this.res.send('Error. ' + e.message);
 		}
-		else
-			group = group[0];
-		this.res.send('Done. Id is: ' + group.id);
 	}.bind(this));
 
 };

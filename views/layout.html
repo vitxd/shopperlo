@@ -54,15 +54,15 @@
 			document.addEventListener("appMobi.device.ready", onDeviceReady, false);
 		</script>
 
-		<% for (file in libraries) { %>
-		<script type="text/javascript" charset="utf-8" src="js/<%- libraries[file] %>"></script>
-		<% } %>
+		{{#each libraries}}
+		<script type="text/javascript" charset="utf-8" src="js/{{this}}"></script>
+		{{/each}}
 
 	</head>
 
 	<body>
 		<div id="jQUi"> <!-- this is the main container div.  This way, you can have only part of your app use jqUi -->
-			<%= body %>
+			{{{body}}}
 		</div>
 	</body>
 </html>

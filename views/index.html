@@ -4,38 +4,54 @@
 </div>
 <div id="content">
 	<!-- here is where you can add your panels -->
-	<div title='Welcome' id="main" class="panel" selected="true">
+	<div title='Home' id="main" class="panel" selected="true">
 		<ul>
-			<li><a href="#test">Test</a></li>
+			{{#each groups}}
+			<li class="icon pencil mini">
+				<a href="#group_{{_id}}">{{name}}</a>
+			</li>
+			{{/each}}
 		</ul>
 	</div>
 
-	<% for (i in groups) { %>
-	<div title='test' id="group_<%- groups[i]['id'] %>" class="panel">
+	{{#each groups}}
+	<div title='{{name}}' id="group_{{_id}}" class="panel">
+		{{#if list}}
 		<ul>
-			<% for (j in groups[i]['list']) { %>
-			<li><a href="#tmp">groups[i]['list'][j]['name']</a></li>
-			<% } %>
+			<li><a href="#tmp">{{name}}</a></li>
 		</ul>
+		{{else}}
+		<p>No items</p>
+		{{/if}}
 	</div>
-	<% } %>
+	{{/each}}
+
+	<div title="Insert" id="insert" class="panel">
+		<form>
+			<fieldset style="text-align: center;">
+				<input type="text" name="name" class="jq-ui-forms" placeholder="Item"/>
+				<input type="text" name="qty" class="jq-ui-forms" placeholder="Qty"/>
+				<input type="submit" value="Save" class="jq-ui-forms" />
+			</fieldset>
+		</form>
+	</div>
+
+
+
 </div>
 <!-- bottom navbar. Add additional tabs here -->
 <div id="navbar">
 	<div class="horzRule"></div>
 	<a href="#main" id='navbar_home' class='icon home'>home</a>
+	<a href="#insert" id='navbar_insert' class='icon pencil'>insert</a>
 </div>
 <!-- this is the default left side nav menu.  If you do not want any, do not include these -->
 <nav>
-	<div class='title'>Home</div>
 	<ul>
-		<li class="icon home mini">
-			<a href="#main">Selectors</a>
-		</li>
-		<% for (i in groups) { %>
+		{{#each groups}}
 			<li class="icon pencil mini">
-				<a href="#group_<%- groups[i]['id'] %>"><%- groups[i]['name'] %></a>
+				<a href="#group_{{_id}}">{{name}}</a>
 			</li>
-		<% } %>
+		{{/each}}
 	</ul>
 </nav>

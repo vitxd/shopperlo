@@ -1,18 +1,21 @@
 var   db = require('./db.js').db
 	, Schema = require('./db.js').Schema
-	, crypto = require('crypto')
-	;
+	, crypto = require('crypto');
 
 User = new Schema({
-	'username': {
-		type: String,
-		index: {
+	username		: {
+		type	: String,
+		index	: {
 			unique: true
 		}
 	},
-	'email': String,
-	'hashed_password': String,
-	'salt': String
+	email			: String,
+	hashed_password : String,
+	salt			: String,
+	groups 			: [{
+		type : Schema.ObjectId,
+		ref  : 'Group'
+	}]
 });
 
 User.virtual('id')
@@ -40,20 +43,13 @@ User.method('encryptPassword', function(password) {
 	return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
 });
 
-User.method('getGroups', function(callback){
-	var GroupSchema = require('./group.js').Group;
-	GroupSchema.find({users: this.id}, function(err, results){
-		callback(results);
-	})
-});
-
 User.pre('save', function(next) {
-	if (!this.password) {
-		console.log('Dio cane');
+	if (!this.salt || !this.hashed_password) {
 		next(new Error('Invalid password'));
 	} else {
 		next();
 	}
 });
 
-module.exports.User 	= db.model('user', User);
+module.exports.schema	= User;
+module.exports.User 	= db.model('User', User);
