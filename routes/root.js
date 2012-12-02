@@ -24,7 +24,9 @@ var Router = function(req, res){
 
 	this.post		= req.body;
 
-    this.init();
+	this.url 		= req.url;
+
+    this._init();
 	this.close();
 };
 
@@ -36,19 +38,17 @@ Router.prototype.isLogged = function(){
 	return (typeof this.session.user === 'object');
 };
 
-Router.prototype.init = function(){
+Router.prototype._init = function(){
 	if(this.isLogged()){
 		this.index();
-	}
-	else{
-		if(this.isPost())
-			this.doLogin();
-		else
-			this.login(false);
+	} else if (this.isPost()) {
+		this.doLogin();
+	} else {
+		this.login(false);
 	}
 };
 
-Router.prototype.setUser = function(user){
+Router.prototype._setUser = function(user){
 	this.session.user 	= user;
 };
 
@@ -56,12 +56,16 @@ Router.prototype.index = function(){
 	if(!this.isLogged())
 		return this.login();
 
+
 	this.view
+		.addLibrary('/socket.io/socket.io.js')
+		.addLibrary('js/global.js')
 		.set('groups', this.session.groups)
 		.display('index.html');
+	this.view.debug('groups');
 };
 
-Router.prototype.getUser = function(){
+Router.prototype._getUser = function(){
 	return this.session.user;
 };
 
@@ -70,12 +74,12 @@ Router.prototype.login = function(err){
 		return this.index();
 
 	this.view
-		.addLibrary('login.js')
+		.addLibrary('js/login.js')
 		.set('error', err)
 		.display('login.html')
 };
 
-Router.prototype.setGroups = function(groups){
+Router.prototype._setGroups = function(groups){
 	this.session.groups = groups;
 	return this;
 };
@@ -96,8 +100,8 @@ Router.prototype.doLogin = function(){
 				}
 
 				if(user.authenticate(this.post.password)){
-					this.setUser(user);
-					this.setGroups(user.groups);
+					this._setUser(user);
+					this._setGroups(user.groups);
 					this.index();
 				}
 				else

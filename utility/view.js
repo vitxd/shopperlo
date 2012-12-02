@@ -30,4 +30,8 @@ View.prototype.display = function(filename){
 	return this;
 }
 
+View.prototype.debug = function(key){
+	console.log(this.obj.locals[key]);
+}
+
 module.exports = View;

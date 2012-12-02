@@ -1,6 +1,6 @@
 <!-- this is the header div at the top -->
 <div id="header">
-	<a href="javascript:$.ui.toggleSideMenu()" class="button" style="float:right">Toggle Nav</a>
+	<a href="show/menu" class="button" style="float:right">Toggle Nav</a>
 </div>
 <div id="content">
 	<!-- here is where you can add your panels -->
@@ -8,7 +8,7 @@
 		<ul>
 			{{#each groups}}
 			<li class="icon pencil mini">
-				<a href="#group_{{_id}}">{{name}}</a>
+				<a href="group/{{_id}}">{{name}}</a>
 			</li>
 			{{/each}}
 		</ul>
@@ -27,11 +27,11 @@
 	{{/each}}
 
 	<div title="Insert" id="insert" class="panel">
-		<form>
+		<form id="insertForm">
 			<fieldset style="text-align: center;">
 				<input type="text" name="name" class="jq-ui-forms" placeholder="Item"/>
 				<input type="text" name="qty" class="jq-ui-forms" placeholder="Qty"/>
-				<input type="submit" value="Save" class="jq-ui-forms" />
+				<input type="submit" id="insertButton" value="Save" class="jq-ui-forms" />
 			</fieldset>
 		</form>
 	</div>
@@ -42,15 +42,15 @@
 <!-- bottom navbar. Add additional tabs here -->
 <div id="navbar">
 	<div class="horzRule"></div>
-	<a href="#main" id='navbar_home' class='icon home'>home</a>
-	<a href="#insert" id='navbar_insert' class='icon pencil'>insert</a>
+	<a href="main" id='navbar_home' class='icon home'>home</a>
+	<a href="insert" id='navbar_insert' class='icon pencil'>insert</a>
 </div>
 <!-- this is the default left side nav menu.  If you do not want any, do not include these -->
 <nav>
 	<ul>
 		{{#each groups}}
 			<li class="icon pencil mini">
-				<a href="#group_{{_id}}">{{name}}</a>
+				<a href="group/{{_id}}">{{name}}</a>
 			</li>
 		{{/each}}
 	</ul>

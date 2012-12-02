@@ -14,6 +14,7 @@
 		<script type="text/javascript" charset="utf-8" src="http://localhost:58888/_appMobi/xhr.js"></script>
 		-->
 		<script type="text/javascript" charset="utf-8" src="js/jq.ui.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/app.js"></script>
 		<!-- include touch.js on desktop browsers only -->
 		<script>
 			if (!((window.DocumentTouch && document instanceof DocumentTouch) || 'ontouchstart' in window)) {
@@ -39,6 +40,8 @@
 			document.addEventListener("DOMContentLoaded", init, false);
 			$.ui.ready(function () {
 				//This function will get executed when $.ui.launch has completed
+				app = new App();
+				$.ui.customClickHandler=app['_clickHandler'];
 			});
 
 
@@ -55,9 +58,8 @@
 		</script>
 
 		{{#each libraries}}
-		<script type="text/javascript" charset="utf-8" src="js/{{this}}"></script>
+		<script type="text/javascript" charset="utf-8" src="{{this}}"></script>
 		{{/each}}
-
 	</head>
 
 	<body>
