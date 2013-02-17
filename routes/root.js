@@ -25,9 +25,9 @@ var Router = function(req, res){
 	this.post		= req.body;
 
 	this.url 		= req.url;
-
+	console.log('From HTTP sessionid: ',this.session.id);
     this._init();
-	this.close();
+	this._close();
 };
 
 Router.prototype.isPost = function(){
@@ -55,7 +55,6 @@ Router.prototype._setUser = function(user){
 Router.prototype.index = function(){
 	if(!this.isLogged())
 		return this.login();
-
 
 	this.view
 		.addLibrary('/socket.io/socket.io.js')
@@ -117,6 +116,6 @@ Router.prototype.doLogin = function(){
 
 };
 
-Router.prototype.close = function(){
+Router.prototype._close = function(){
 	this.session.save();
 }

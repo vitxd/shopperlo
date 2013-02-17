@@ -9,8 +9,9 @@ App.prototype.main = function(){
 };
 
 App.prototype.insert = function(){
-	if(this.group_id !== null)
+	if(this.group_id !== null){
 		$.ui.loadContent('#insert');
+	}
 };
 
 App.prototype.group = function(id){
@@ -35,9 +36,7 @@ App.prototype.show = function(element){
 
 App.prototype.insertItem = function(data){
 	this.log(data);
-	$.post('/insert-item', data, function(result){
-		this.log(result);
-	});
+	this.socket.emit('insert-item', data);
 };
 
 App.prototype._clickHandler = function(target) {
@@ -76,9 +75,16 @@ App.prototype._init = function(){
 	$.ui.showBackbutton=false
 	$.ui.loadContent('#main');
 
+	this.socket = io.connect('http://localhost:3000');
+
+	this.socket.on('news', function(data){alert('yeah!')});
+
 	$('#insertForm').bind('submit', function(e){
 		e.preventDefault();
-		var data = $('#insertForm').serialize('item');
+		var data = {};
+		$('#insertForm input[type=text]').each(function(){
+			data[$(this).attr('name')] = $(this).val();
+		});
 		this.insertItem(data);
 		return false;
 	}.bind(this));
